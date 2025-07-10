@@ -1,0 +1,439 @@
+{% extends "base.html" %}
+{% block title %}Student Dashboard | Course Feedback System{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/student.css') }}">
+<style>
+.college-banner {
+  background: linear-gradient(135deg, var(--student-primary) 0%, var(--student-secondary) 100%);
+  color: white;
+  padding: 0.75rem 0;
+  overflow: hidden;
+  white-space: nowrap;
+  box-shadow: 0 2px 4px -1px rgb(0 0 0 / 0.1);
+  position: relative;
+}
+
+.college-banner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.scrolling-content {
+  display: inline-block;
+  padding-left: 100%;
+  animation: scroll-left 35s linear infinite;
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: 0.05em;
+}
+
+@keyframes scroll-left {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}
+
+.welcome-section {
+  background: linear-gradient(135deg, white 0%, #f8fafc 100%);
+  border-radius: 20px;
+  padding: 2.5rem;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  margin: 2rem 0;
+  border-left: 5px solid var(--student-primary);
+  position: relative;
+  overflow: hidden;
+}
+
+.welcome-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100px;
+  height: 100px;
+  background: linear-gradient(135deg, var(--student-primary) 0%, var(--student-secondary) 100%);
+  opacity: 0.1;
+  border-radius: 50%;
+  transform: translate(30px, -30px);
+}
+
+.status-card {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  transition: all 0.3s ease;
+  border: 1px solid #e5e7eb;
+  position: relative;
+  overflow: hidden;
+}
+
+.status-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--student-primary) 0%, var(--student-secondary) 100%);
+}
+
+.status-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+}
+
+.event-active {
+  border-left-color: var(--student-primary);
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+}
+
+.event-completed {
+  border-left-color: #6b7280;
+  background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+}
+
+.event-none {
+  border-left-color: #f59e0b;
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+}
+
+.pulse-animation {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.feature-item {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+  transition: all 0.3s ease;
+}
+
+.feature-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
+
+.feature-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+  font-size: 1.5rem;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- College Information Banner -->
+<div class="college-banner">
+  <div class="scrolling-content">
+    <i class="fas fa-university me-2"></i>Sri Ramakrishna Engineering College - Autonomous Institution
+    <span class="mx-4">|</span>
+    <i class="fas fa-award me-2"></i>NAAC 'A+' Accredited
+    <span class="mx-4">|</span>
+    <i class="fas fa-certificate me-2"></i>NBA Accredited Programs
+    <span class="mx-4">|</span>
+    <i class="fas fa-check-circle me-2"></i>AICTE Approved & Anna University Affiliated
+    <span class="mx-4">|</span>
+    <i class="fas fa-medal me-2"></i>ISO 9001:2015 Certified
+    <span class="mx-4">|</span>
+    <i class="fas fa-calendar me-2"></i>Established 1994
+    <span class="mx-4">|</span>
+    <i class="fas fa-lightbulb me-2"></i>Innovation & Excellence in Engineering Education
+    <span class="mx-4">|</span>
+    <i class="fas fa-globe me-2"></i>Creating Globally Competitive Engineers
+    <span class="mx-4">|</span>
+    <i class="fas fa-laptop me-2"></i>Smart Campus with Future-Ready Infrastructure
+  </div>
+</div>
+
+<div class="container my-4 fade-in-up">
+  <!-- Welcome Section -->
+  <div class="welcome-section">
+    <div class="row align-items-center">
+      <div class="col-lg-8">
+        <h1 class="text-gradient mb-3">
+          <i class="fas fa-user-graduate me-3"></i>
+          Welcome to Student Portal
+        </h1>
+        <p class="lead text-muted mb-0">
+          Access your course feedback dashboard and contribute to improving our educational excellence.
+        </p>
+      </div>
+      <div class="col-lg-4 text-center text-lg-end mt-3 mt-lg-0">
+        <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 100px; height: 100px;">
+          <i class="fas fa-clipboard-check fa-3x text-primary"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Event Status Section -->
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      {% if active_event %}
+        {% if not has_submitted %}
+          <!-- Active Event - Not Submitted -->
+          <div class="status-card event-active">
+            <div class="text-center">
+              <div class="mb-4">
+                <div class="bg-success bg-opacity-20 rounded-circle d-inline-flex align-items-center justify-content-center pulse-animation" style="width: 80px; height: 80px;">
+                  <i class="fas fa-play-circle fa-2x text-success"></i>
+                </div>
+              </div>
+              <h3 class="text-success fw-bold mb-3">
+                <i class="fas fa-broadcast-tower me-2"></i>
+                Live Feedback Event
+              </h3>
+              <div class="bg-white rounded-3 p-3 mb-4 border border-success border-opacity-25">
+                <h4 class="text-primary mb-2">{{ active_event.title }}</h4>
+                {% if active_event.description %}
+                  <p class="text-muted mb-0">{{ active_event.description }}</p>
+                {% endif %}
+              </div>
+              {% if event_blocked %}
+                <div class="alert alert-warning border-0 mb-4">
+                  <i class="fas fa-exclamation-triangle me-2"></i>
+                  <strong>Access Restricted:</strong> {{ warning_message }}
+                </div>
+              {% else %}
+                <div class="alert alert-info border-0 mb-4">
+                  <i class="fas fa-info-circle me-2"></i>
+                  <strong>Action Required:</strong> Please submit your feedback for this event.
+                </div>
+                <a href="{{ url_for('student.feedback_form') }}" class="btn btn-student-primary btn-lg px-5">
+                  <i class="fas fa-edit me-2"></i>
+                  <span>Start Feedback</span>
+                </a>
+              {% endif %}
+              <div class="mt-4">
+                <small class="text-muted">
+                  <i class="fas fa-clock me-1"></i>
+                  Estimated time: 5-10 minutes
+                </small>
+              </div>
+            </div>
+          </div>
+        {% else %}
+          <!-- Active Event - Already Submitted -->
+          <div class="status-card event-completed">
+            <div class="text-center">
+              <div class="mb-4">
+                <div class="bg-success bg-opacity-20 rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                  <i class="fas fa-check-circle fa-2x text-success"></i>
+                </div>
+              </div>
+              
+              <h3 class="text-success fw-bold mb-3">
+                <i class="fas fa-thumbs-up me-2"></i>
+                Feedback Submitted Successfully
+              </h3>
+              
+              <div class="bg-white rounded-3 p-3 mb-4 border border-success border-opacity-25">
+                <h4 class="text-primary mb-2">{{ active_event.title }}</h4>
+                <p class="text-muted mb-0">Thank you for your valuable feedback!</p>
+              </div>
+              
+              <div class="alert alert-success border-0 mb-4">
+                <i class="fas fa-check-circle me-2"></i>
+                <strong>Completed:</strong> Your feedback has been recorded for this event.
+              </div>
+              
+              <button class="btn btn-outline-success btn-lg" disabled>
+                <i class="fas fa-check me-2"></i>
+                Feedback Completed
+              </button>
+              
+              <div class="mt-4">
+                <small class="text-muted">
+                  <i class="fas fa-shield-alt me-1"></i>
+                  Your responses are confidential and help improve our education quality
+                </small>
+              </div>
+            </div>
+          </div>
+        {% endif %}
+      {% else %}
+        <!-- No Active Event -->
+        <div class="status-card event-none">
+          <div class="text-center">
+            <div class="mb-4">
+              <div class="bg-warning bg-opacity-20 rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                <i class="fas fa-pause-circle fa-2x text-warning"></i>
+              </div>
+            </div>
+            
+            <h3 class="text-warning fw-bold mb-3">
+              <i class="fas fa-calendar-times me-2"></i>
+              No Active Events
+            </h3>
+            
+            <div class="bg-white rounded-3 p-3 mb-4 border border-warning border-opacity-25">
+              <p class="text-muted mb-0">There are currently no live feedback events available.</p>
+            </div>
+            
+            <div class="alert alert-warning border-0 mb-4">
+              <i class="fas fa-bell me-2"></i>
+              <strong>Stay Tuned:</strong> New feedback events will be announced here when available.
+            </div>
+            
+            <button class="btn btn-outline-warning btn-lg" disabled>
+              <i class="fas fa-clock me-2"></i>
+              Waiting for Events
+            </button>
+            
+            <div class="mt-4">
+              <small class="text-muted">
+                <i class="fas fa-refresh me-1"></i>
+                Check back later or contact your administrator for updates
+              </small>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Features Section -->
+  <div class="feature-grid">
+    <div class="feature-item">
+      <div class="feature-icon bg-primary bg-opacity-10">
+        <i class="fas fa-user-shield text-primary"></i>
+      </div>
+      <h6 class="fw-bold text-primary">Secure & Anonymous</h6>
+      <p class="text-muted small mb-0">Your feedback is completely confidential and helps improve education quality.</p>
+    </div>
+    
+    <div class="feature-item">
+      <div class="feature-icon bg-success bg-opacity-10">
+        <i class="fas fa-mobile-alt text-success"></i>
+      </div>
+      <h6 class="fw-bold text-success">Mobile Friendly</h6>
+      <p class="text-muted small mb-0">Access the feedback system from any device, anywhere, anytime.</p>
+    </div>
+    
+    <div class="feature-item">
+      <div class="feature-icon bg-info bg-opacity-10">
+        <i class="fas fa-clock text-info"></i>
+      </div>
+      <h6 class="fw-bold text-info">Quick & Easy</h6>
+      <p class="text-muted small mb-0">Complete your feedback in just a few minutes with our streamlined interface.</p>
+    </div>
+    
+    <div class="feature-item">
+      <div class="feature-icon bg-warning bg-opacity-10">
+        <i class="fas fa-chart-line text-warning"></i>
+      </div>
+      <h6 class="fw-bold text-warning">Impact Driven</h6>
+      <p class="text-muted small mb-0">Your feedback directly contributes to enhancing teaching and learning experiences.</p>
+    </div>
+  </div>
+
+  <!-- Additional Information -->
+  <div class="row mt-5">
+    <div class="col-12">
+      <div class="card border-0 bg-light">
+        <div class="card-body text-center py-4">
+          <h6 class="text-primary fw-bold mb-3">
+            <i class="fas fa-question-circle me-2"></i>
+            Need Help?
+          </h6>
+          <p class="text-muted mb-3">
+            If you encounter any issues or have questions about the feedback process, 
+            please contact your system administrator or academic office.
+          </p>
+          <div class="d-flex justify-content-center gap-3 flex-wrap">
+            <span class="badge bg-primary px-3 py-2">
+              <i class="fas fa-envelope me-1"></i>
+              Email Support Available
+            </span>
+            <span class="badge bg-success px-3 py-2">
+              <i class="fas fa-phone me-1"></i>
+              Phone Support Available
+            </span>
+            <span class="badge bg-info px-3 py-2">
+              <i class="fas fa-clock me-1"></i>
+              24/7 System Access
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Add smooth animations to cards
+  const cards = document.querySelectorAll('.status-card, .feature-item');
+  cards.forEach((card, index) => {
+    card.style.animationDelay = `${index * 0.1}s`;
+    card.classList.add('fade-in-up');
+  });
+  
+  // Auto-refresh page every 5 minutes to check for new events
+  setTimeout(function() {
+    window.location.reload();
+  }, 300000); // 5 minutes
+  
+  // Add loading state to feedback button
+  const feedbackBtn = document.querySelector('a[href*="feedback_form"]');
+  if (feedbackBtn) {
+    feedbackBtn.addEventListener('click', function() {
+      const icon = this.querySelector('i');
+      const span = this.querySelector('span');
+      
+      if (icon && span) {
+        icon.className = 'fas fa-spinner fa-spin me-2';
+        span.textContent = 'Loading...';
+      }
+    });
+  }
+  
+  // Add hover effects to feature items
+  const featureItems = document.querySelectorAll('.feature-item');
+  featureItems.forEach(item => {
+    item.addEventListener('mouseenter', function() {
+      const icon = this.querySelector('.feature-icon');
+      icon.style.transform = 'scale(1.1) rotate(5deg)';
+    });
+    
+    item.addEventListener('mouseleave', function() {
+      const icon = this.querySelector('.feature-icon');
+      icon.style.transform = 'scale(1) rotate(0deg)';
+    });
+  });
+});
+</script>
+{% endblock %}
