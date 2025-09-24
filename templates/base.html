@@ -154,7 +154,7 @@
                             <i class="fas fa-award text-warning me-2"></i>NAAC 'A+' Accredited | 
                             <i class="fas fa-certificate text-info me-2 ms-2"></i>NBA Accredited Programs | 
                             <i class="fas fa-university text-primary me-2 ms-2"></i>Autonomous Institution
-                          </p>
+            <div class="row justify-content-center mt-5 g-4">
                         </div>
                         <div class="col-lg-4 mt-3 mt-lg-0">
                           <div class="d-flex justify-content-center justify-content-lg-end">
@@ -168,6 +168,23 @@
               </div>
             </div>
           </div>
+                <div class="card access-card h-100 hover-lift">
+                  <div class="card-body text-center d-flex flex-column">
+                    <div class="mb-4">
+                      <div class="bg-info bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                        <i class="fas fa-user-cog fa-2x text-info"></i>
+                      </div>
+                    </div>
+                    <h3 class="card-title fw-bold text-info mb-3">In-charge Portal</h3>
+                    <p class="card-text text-muted mb-4 flex-grow-1">Manage department feedback and respond to student concerns</p>
+                    <a href="{{ url_for('incharge.login') }}" class="btn btn-info btn-lg mt-auto">
+                      <i class="fas fa-clipboard-list me-2"></i>In-charge Access
+                    </a>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="col-lg-4 col-md-6">
           {% endblock %}
         </div>
       </div>

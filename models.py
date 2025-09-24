@@ -14,6 +14,8 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(64), unique=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
+    is_incharge = db.Column(db.Boolean, default=False)
+    incharge_category = db.Column(db.String(50), nullable=True)  # fc, library, transport, sports, bookdepot
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -24,6 +26,19 @@ class User(db.Model, UserMixin):
     def __repr__(self):
         return f'<User {self.username}>'
 
+# New General Feedback Model
+class GeneralFeedback(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    category = db.Column(db.String(50), nullable=False)  # fc, library, transport, sports, bookdepot, general
+    content = db.Column(db.Text, nullable=False)
+    student_id = db.Column(db.Integer, db.ForeignKey('student.id'), nullable=False)
+    student = db.relationship('Student', backref='general_feedbacks')
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    is_resolved = db.Column(db.Boolean, default=False)
+    admin_response = db.Column(db.Text, nullable=True)
+
+    def __repr__(self):
+        return f'<GeneralFeedback {self.category}: {self.id}>'
 class Student(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     roll_number = db.Column(db.String(20), unique=True, nullable=False)

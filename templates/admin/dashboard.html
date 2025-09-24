@@ -60,6 +60,11 @@
             <i class="fas fa-chart-bar me-2"></i>Results
           </a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('admin.general_feedback') }}">
+            <i class="fas fa-comments me-2"></i>General Feedback
+          </a>
+        </li>
       </ul>
       <ul class="navbar-nav ms-auto">
         <li class="nav-item">
@@ -151,6 +156,21 @@
         <p class="text-muted mb-3">All-time responses</p>
         <a href="{{ url_for('admin.results') }}" class="btn btn-outline-primary btn-sm">
           <i class="fas fa-eye me-2"></i>View Results
+        </a>
+      </div>
+    </div>
+
+    <!-- General Feedback Card -->
+    <div class="dashboard-card">
+      <div class="card-body text-center">
+        <div class="mb-3">
+          <i class="fas fa-comments fa-2x text-info"></i>
+        </div>
+        <h5 class="card-title">General Feedback</h5>
+        <div class="stats-number">{{ total_general_feedback }}</div>
+        <p class="text-muted mb-3">All categories</p>
+        <a href="{{ url_for('admin.general_feedback') }}" class="btn btn-outline-primary btn-sm">
+          <i class="fas fa-eye me-2"></i>View Feedback
         </a>
       </div>
     </div>
@@ -258,6 +278,10 @@
             <a href="{{ url_for('admin.results') }}" class="btn btn-outline-warning mb-2">
               <i class="fas fa-download me-2"></i>
               <div>Download Reports</div>
+            </a>
+            <a href="{{ url_for('admin.general_feedback') }}" class="btn btn-outline-info mb-2">
+              <i class="fas fa-comments me-2"></i>
+              <div>General Feedback</div>
             </a>
           </div>
         </div>

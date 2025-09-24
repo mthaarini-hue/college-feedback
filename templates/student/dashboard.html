@@ -307,8 +307,15 @@
             </div>
             
             <button class="btn btn-outline-warning btn-lg" disabled>
-              <i class="fas fa-clock me-2"></i>
+                    Access your feedback dashboard and contribute to improving our educational excellence.
               Waiting for Events
+                  <div class="mt-3">
+                    <a href="{{ url_for('student.general_feedback_dashboard') }}" class="btn btn-outline-primary me-3">
+                      <i class="fas fa-comments me-2"></i>General Feedback
+                    </a>
+                    <span class="text-muted">|</span>
+                    <span class="ms-3 text-muted">Course feedback below</span>
+                  </div>
             </button>
             
             <div class="mt-4">

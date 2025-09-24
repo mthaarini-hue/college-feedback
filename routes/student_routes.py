@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from werkzeug.security import check_password_hash, generate_password_hash
 from myextensions import db
-from models import Student, Event, FeedbackResponse, Course, Staff, Question, QuestionResponse
+from models import Student, Event, FeedbackResponse, Course, Staff, Question, QuestionResponse, GeneralFeedback
 
 student_bp = Blueprint('student', __name__, url_prefix='/student')
 
@@ -59,6 +59,68 @@ def dashboard():
                            has_submitted=has_submitted,
                            event_blocked=event_blocked,
                            warning_message=warning_message)
+
+@student_bp.route('/general-feedback')
+def general_feedback_dashboard():
+    student_id = session.get('student_id')
+    if not student_id:
+        return redirect(url_for('student.login'))
+    
+    student = Student.query.get_or_404(student_id)
+    
+    # Get student's feedback history
+    feedback_history = GeneralFeedback.query.filter_by(student_id=student_id).order_by(GeneralFeedback.timestamp.desc()).all()
+    
+    return render_template('student/general_feedback_dashboard.html', 
+                         student=student,
+                         feedback_history=feedback_history)
+
+@student_bp.route('/submit-feedback/<category>', methods=['GET', 'POST'])
+def submit_feedback(category):
+    student_id = session.get('student_id')
+    if not student_id:
+        return redirect(url_for('student.login'))
+    
+    student = Student.query.get_or_404(student_id)
+    
+    valid_categories = ['fc', 'library', 'transport', 'sports', 'bookdepot', 'general']
+    if category not in valid_categories:
+        flash('Invalid feedback category', 'danger')
+        return redirect(url_for('student.general_feedback_dashboard'))
+    
+    category_names = {
+        'fc': 'Food Court',
+        'library': 'Library',
+        'transport': 'Transport',
+        'sports': 'Sports',
+        'bookdepot': 'Book Depot',
+        'general': 'General'
+    }
+    
+    if request.method == 'POST':
+        content = request.form.get('content', '').strip()
+        if not content:
+            flash('Please provide your feedback before submitting.', 'warning')
+            return render_template('student/submit_feedback.html', 
+                                 category=category,
+                                 category_name=category_names[category],
+                                 student=student)
+        
+        feedback = GeneralFeedback(
+            category=category,
+            content=content,
+            student_id=student_id
+        )
+        db.session.add(feedback)
+        db.session.commit()
+        
+        flash('Your feedback has been submitted successfully!', 'success')
+        return redirect(url_for('student.general_feedback_dashboard'))
+    
+    return render_template('student/submit_feedback.html', 
+                         category=category,
+                         category_name=category_names[category],
+                         student=student)
 
 @student_bp.route('/feedback', methods=['GET', 'POST'])
 def feedback_form():

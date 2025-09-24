@@ -46,11 +46,13 @@ def create_app(config_class=Config):
 
     from routes.admin_routes import admin_bp
     from routes.student_routes import student_bp
+    from routes.incharge_routes import incharge_bp
     app.register_blueprint(admin_bp)
     app.register_blueprint(student_bp)
+    app.register_blueprint(incharge_bp)
 
     with app.app_context():
-        from models import User, Student, Event, Course, Staff, Question, FeedbackResponse
+        from models import User, Student, Event, Course, Staff, Question, FeedbackResponse, GeneralFeedback
         db.create_all()
 
         # Create admin and default questions if not present
@@ -61,6 +63,20 @@ def create_app(config_class=Config):
                          password_hash=generate_password_hash('admin123'),
                          is_admin=True)
             db.session.add(admin)
+            
+            # Create default in-charge users
+            incharge_categories = ['fc', 'library', 'transport', 'sports', 'bookdepot']
+            for category in incharge_categories:
+                existing_incharge = User.query.filter_by(username=category, is_incharge=True).first()
+                if not existing_incharge:
+                    incharge = User(
+                        username=category,
+                        password_hash=generate_password_hash(f'{category}@123'),
+                        is_incharge=True,
+                        incharge_category=category
+                    )
+                    db.session.add(incharge)
+            
             questions_text = [
                 "How would you rate the clarity of course objectives?",
                 "How would you rate the organization of course content?",

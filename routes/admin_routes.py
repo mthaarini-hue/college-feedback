@@ -15,6 +15,7 @@ import io
 import zipfile
 
 from models import User, Student, Event, Course, Staff, Question, FeedbackResponse, QuestionResponse
+from models import GeneralFeedback
 from utils.excel_handler import allowed_file, validate_student_excel, validate_course_staff_excel
 from utils.pdf_generator import generate_pdf_report
 
@@ -66,6 +67,7 @@ def dashboard():
     events = safe_filter(Event.query).all()
     total_students = Student.query.count()
     total_responses = FeedbackResponse.query.count()
+    total_general_feedback = GeneralFeedback.query.count()
     active_event = safe_filter(Event.query.filter_by(is_active=True)).first()
     event_responses = 0
     completion_rate = 0
@@ -76,8 +78,98 @@ def dashboard():
         completion_rate = (event_responses / total_students) * 100
     return render_template('admin/dashboard.html', events=events,
                            total_students=total_students, total_responses=total_responses,
+                           total_general_feedback=total_general_feedback,
                            active_event=active_event, completion_rate=completion_rate, event_responses=event_responses,
                            students=students, responded_ids=responded_ids)
+
+@admin_bp.route('/general-feedback')
+@login_required
+def general_feedback():
+    if not current_user.is_admin:
+        flash('Access denied.', 'danger')
+        return redirect(url_for('admin.login'))
+    
+    category_filter = request.args.get('category', 'all')
+    
+    if category_filter == 'all':
+        feedbacks = GeneralFeedback.query.order_by(GeneralFeedback.timestamp.desc()).all()
+    else:
+        feedbacks = GeneralFeedback.query.filter_by(category=category_filter).order_by(GeneralFeedback.timestamp.desc()).all()
+    
+    # Get category statistics
+    category_stats = {}
+    categories = ['fc', 'library', 'transport', 'sports', 'bookdepot', 'general']
+    for cat in categories:
+        category_stats[cat] = GeneralFeedback.query.filter_by(category=cat).count()
+    
+    category_names = {
+        'fc': 'Food Court',
+        'library': 'Library',
+        'transport': 'Transport',
+        'sports': 'Sports',
+        'bookdepot': 'Book Depot',
+        'general': 'General'
+    }
+    
+    return render_template('admin/general_feedback.html', 
+                         feedbacks=feedbacks,
+                         category_filter=category_filter,
+                         category_stats=category_stats,
+                         category_names=category_names)
+
+@admin_bp.route('/general-feedback/<int:feedback_id>/resolve', methods=['POST'])
+@login_required
+def resolve_general_feedback(feedback_id):
+    if not current_user.is_admin:
+        flash('Access denied.', 'danger')
+        return redirect(url_for('admin.login'))
+    
+    feedback = GeneralFeedback.query.get_or_404(feedback_id)
+    response = request.form.get('response', '')
+    
+    feedback.is_resolved = True
+    feedback.admin_response = response
+    db.session.commit()
+    
+    flash('Feedback marked as resolved.', 'success')
+    return redirect(url_for('admin.general_feedback'))
+
+@admin_bp.route('/api/general-feedback-stats')
+@login_required
+def general_feedback_stats():
+    if not current_user.is_admin:
+        return jsonify({'error': 'Access denied'}), 403
+    
+    # Get monthly feedback counts for the last 6 months
+    from datetime import datetime, timedelta
+    monthly_data = []
+    category_data = {}
+    
+    categories = ['fc', 'library', 'transport', 'sports', 'bookdepot', 'general']
+    
+    for i in range(6):
+        start_date = datetime.utcnow().replace(day=1) - timedelta(days=30*i)
+        end_date = start_date.replace(day=28) + timedelta(days=4)
+        end_date = end_date - timedelta(days=end_date.day)
+        
+        total_count = GeneralFeedback.query.filter(
+            GeneralFeedback.timestamp >= start_date,
+            GeneralFeedback.timestamp <= end_date
+        ).count()
+        
+        monthly_data.append({
+            'month': start_date.strftime('%b %Y'),
+            'count': total_count
+        })
+    
+    # Get category-wise data
+    for cat in categories:
+        category_data[cat] = GeneralFeedback.query.filter_by(category=cat).count()
+    
+    return jsonify({
+        'monthly_data': list(reversed(monthly_data)),
+        'category_data': category_data
+    })
 
 @admin_bp.route('/events', methods=['GET', 'POST'])
 @login_required
